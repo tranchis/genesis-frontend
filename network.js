@@ -1,41 +1,13 @@
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>Force-Directed Graph</title>
-    <script type="text/javascript" src="d3.min.js"></script>
-    <script type="text/javascript" src="d3.geom.min.js"></script>
-    <script type="text/javascript" src="d3.layout.min.js"></script>
-    <style type="text/css">
-
-circle.node {
-  cursor: pointer;
-  stroke: #000;
-  stroke-width: .5px;
-}
-
-line.link {
-  fill: none;
-  stroke: #9ecae1;
-  stroke-width: 1.5px;
-}
-
-    </style>
-  </head>
-  <body>
-    <div id="chart"></div>
-    <script type="text/javascript">
-
 var w = 960,
     h = 500,
     node,
     link,
-    root;
+    root,
+    colorscale = d3.scale.category10();
 
 var force = d3.layout.force()
     .on("tick", tick)
-    .charge(function(d) { return d._children ? -d.size / 100 : -30; })
+    .charge(function(d) { return d._children ? -d.size : -30; })
     .linkDistance(function(d) { return d.target._children ? 80 : 30; })
     .size([w, h]);
 
@@ -43,7 +15,7 @@ var vis = d3.select("#chart").append("svg")
     .attr("width", w)
     .attr("height", h);
 
-d3.json("flare.json", function(json) {
+d3.json("followers", function(json) {
   root = json;
   root.fixed = true;
   root.x = w / 2;
@@ -82,17 +54,20 @@ function update() {
       .style("fill", color);
 
   node.transition()
-      .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; });
+      .attr("r", function(d) { return d.children ? 4.5 : d.size; });
 
   // Enter any new nodes.
   node.enter().append("circle")
       .attr("class", "node")
       .attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; })
-      .attr("r", function(d) { return d.children ? 4.5 : Math.sqrt(d.size) / 10; })
+      .attr("r", function(d) { return d.children ? 4.5 : d.size; })
       .style("fill", color)
       .on("click", click)
       .call(force.drag);
+
+  node.append("title")
+      .text(function(d) { return d.name; });
 
   // Exit any old nodes.
   node.exit().remove();
@@ -110,7 +85,8 @@ function tick() {
 
 // Color leaf nodes orange, and packages white or blue.
 function color(d) {
-  return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+//  return d._children ? "#3182bd" : d.children ?  : "#fd8d3c";
+  return d._children ? "#3182bd" : d.children ? "#c6dbef" : colorscale(d.size);
 }
 
 // Toggle children on click.
@@ -139,7 +115,3 @@ function flatten(root) {
   root.size = recurse(root);
   return nodes;
 }
-
-    </script>
-  </body>
-</html>
