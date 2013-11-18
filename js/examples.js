@@ -3,55 +3,43 @@ $(document).ready(function() {
     name: 'countries',
     remote: 'http://genesis.sergio-alvarez.com:3000/autocomplete-director/%QUERY',
     limit: 10
+  }).on('typeahead:selected', function (obj, datum) {
+	  loader = document.getElementById('loader');
+
+	  $.getJSON("http://genesis.sergio-alvarez.com:3000/from-director/" + encodeURIComponent(datum.value), function(data) {
+	    var nodes = data[0]
+	      , links = data[1]
+	      , el = document.getElementById("parent")
+	      , options = {
+	          width: screen.width,
+	          height: screen.height,
+	          colors: { "7": "blue" }
+	        };
+
+	    graph = new Insights(el, nodes, links, options)
+	      .filter({ cluster: 0, size: [500, null] })
+	      .zoom(.85)
+	      .focus({ text: "color" }, { in: 1 })
+	      .center()
+	      .render();
+
+	    graph.on('rendered', function() {
+	      loader.remove();
+	    })
+
+	    graph.on("node:click", function(d) {
+	      console.log("click", d);
+	    });
+
+	    graph.on("node:mouseover", function(d, offset) {
+	      console.log("mouseover", d, offset);
+	    });
+
+	    graph.on("node:mouseout", function(d, offset) {
+	      console.log("mouseout", d, offset);
+	    });
+
+	    graph.tooltip("<div>word: {{text}}</div><div>count: {{count}}</div>");
+	  });
   });
-
-  $('.example-twitter-oss .typeahead').typeahead({
-    name: 'twitter-oss',
-    prefetch: '../data/repos.json',
-    template: [
-      '<p class="repo-language">{{language}}</p>',
-      '<p class="repo-name">{{name}}</p>',
-      '<p class="repo-description">{{description}}</p>'
-    ].join(''),
-    engine: Hogan
-  });
-
-  $('.example-arabic .typeahead').typeahead({
-    name: 'arabic',
-    local: [
-      "الإنجليزية",
-      "نعم",
-      "لا",
-      "مرحبا",
-      "کيف الحال؟",
-      "أهلا",
-      "مع السلامة",
-      "لا أتكلم العربية",
-      "لا أفهم",
-      "أنا جائع"
-    ]
-  });
-
-  $('.example-sports .typeahead').typeahead([
-    {
-      name: 'nba-teams',
-      prefetch: '../data/nba.json',
-      header: '<h3 class="league-name">NBA Teams</h3>'
-    },
-    {
-      name: 'nhl-teams',
-      prefetch: '../data/nhl.json',
-      header: '<h3 class="league-name">NHL Teams</h3>'
-    }
-  ]);
-
-  $('.example-films .typeahead').typeahead([
-    {
-      name: 'best-picture-winners',
-      remote: '../data/films/queries/%QUERY.json',
-      prefetch: '../data/films/post_1960.json',
-      template: '<p><strong>{{value}}</strong> – {{year}}</p>',
-      engine: Hogan
-    }
-  ]);
 });
