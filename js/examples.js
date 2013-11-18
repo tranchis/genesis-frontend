@@ -1,7 +1,7 @@
 $(document).ready(function() {
   $('.example-countries .typeahead').typeahead({
     name: 'countries',
-    remote: 'http://localhost:3000/autocomplete-director/%QUERY',
+    remote: 'http://genesis.sergio-alvarez.com:3000/autocomplete-director/%QUERY',
     limit: 10
   });
 
