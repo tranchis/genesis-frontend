@@ -11,3 +11,13 @@ div.bar {
     stroke: orange;
     stroke-width: 5;
 }
+
+.loader {
+	width: 100%;
+	visibility: hidden;
+}
+
+.parent {
+	width: 100%;
+	visibility: hidden;
+}

@@ -4,8 +4,11 @@ $(document).ready(function() {
     remote: 'http://genesis.sergio-alvarez.com:3000/autocomplete-director/%QUERY',
     limit: 10
   }).on('typeahead:selected', function (obj, datum) {
-	  loader = document.getElementById('loader');
+	  var loader = document.getElementById('loader');
+	  var parent = document.getElementById('parent');
 
+	  loader.style.visibility="visible";
+	  parent.style.visibility="hidden";
 	  $.getJSON("http://genesis.sergio-alvarez.com:3000/from-director/" + encodeURIComponent(datum.value), function(data) {
 	    var nodes = data[0]
 	      , links = data[1]
@@ -23,7 +26,8 @@ $(document).ready(function() {
 	      .render();
 
 	    graph.on('rendered', function() {
-	      loader.remove();
+	  	  loader.style.visibility="hidden";
+		  parent.style.visibility="visible";
 	    })
 
 	    graph.on("node:click", function(d) {
