@@ -17,7 +17,6 @@ $(document).ready(function() {
 	        };
 
 	    graph = new Insights(el, nodes, links, options)
-	      .filter({ cluster: 0, size: [500, null] })
 	      .zoom(.85)
 	      .focus({ text: "color" }, { in: 1 })
 	      .center()
